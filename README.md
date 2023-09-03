@@ -1,4 +1,4 @@
-# Swertesaya App
+# KTV Booking
 
 A fast and simple movie booking application.
 
@@ -8,7 +8,7 @@ The Swertesaya App is a user-friendly movie booking application designed to simp
 
 ## Features
 
-- Browse the latest movie releases.
+- Browse the available roombs
 - View detailed movie information, including cast, genre, and synopsis.
 - Check showtimes at nearby theaters.
 - Reserve and purchase movie tickets.
