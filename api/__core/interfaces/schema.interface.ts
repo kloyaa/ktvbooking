@@ -28,6 +28,7 @@ export interface IProfile extends Document {
     gender: 'male' | 'female' | 'other';
     verified: boolean;
     revoked: boolean;
+    email: string;
     // Other profile properties
 }
 

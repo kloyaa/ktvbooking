@@ -97,7 +97,65 @@ export class RequestValidator {
             address: Joi.string().required(),
             contactNumber: Joi.string().required(),
             gender: Joi.string().required(),
-            refferedBy: Joi.string().optional()
+            email: Joi.string().required()
+        }).validate(body);
+
+        return error;
+    }
+
+    createRoomAPI(body: any) {
+        const { error } = Joi.object({
+            number: Joi.string().required(),
+            capacity: Joi.number().min(2).max(100).required(),
+        }).validate(body);
+
+        return error;
+    }
+
+    createBookingAPI(body: any) {
+        const { error } = Joi.object({
+            room: Joi.string().required(),
+            start: Joi.date().iso().required(),
+            end: Joi.date().iso().required(),
+        }).validate(body);
+
+        return error;
+    }
+
+    createFoodAPI(body: any) {
+        const { error } = Joi.object({
+            name: Joi.string().required(),
+            price: Joi.number().min(1).max(50000).required(),
+        }).validate(body);
+
+        return error;
+    }
+
+    createOrderAPI(body: any) {
+        const { error } = Joi.object({
+            food: Joi.string().required(),
+            room: Joi.string().required(),
+            message: Joi.string().required(),
+            qty: Joi.number().min(1).max(100).required(),
+        }).validate(body);
+
+        return error;
+    }
+
+    updateOrderAPI(body: any) {
+        const { error } = Joi.object({
+            food: Joi.string().required(),
+            room: Joi.string().required(),
+        }).validate(body);
+
+        return error;
+    }
+
+    updateBookingAPI(body: any) {
+        const { error } = Joi.object({
+            user: Joi.string().required(),
+            room: Joi.string().required(),
+            active: Joi.boolean().required(),
         }).validate(body);
 
         return error;

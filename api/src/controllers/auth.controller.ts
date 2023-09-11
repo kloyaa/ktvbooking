@@ -13,7 +13,7 @@ import { isClientActive, isClientProfileCreated, isClientVerified } from '../../
 import { emitter } from '../../__core/events/activity.event'
 import { ActivityType, EventName } from '../../__core/enum/activity.enum'
 import { UserRole } from '../../__core/models/roles.model'
-require('dotenv').config()
+import { envVars } from '../../__core/const/config.const'
 
 export const login = async (req: Request & { from: string }, res: Response): Promise<Response<any>> => {
   try {
@@ -29,11 +29,11 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
     const { username, password } = req.body
 
     // Get secrets
-    const secrets = await getAwsSecrets()
-    if (isEmpty(secrets)) {
-      res.status(401).json(statuses['0300'])
-      return
-    }
+    // const secrets = await getAwsSecrets()
+    // if (isEmpty(secrets)) {
+    //   res.status(401).json(statuses['0300'])
+    //   return
+    // }
 
     // Check if the user exists based on the username
     const user: IUser | null = await User.findOne({ username }).exec()
@@ -65,18 +65,18 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
       return res.status(401).json(statuses['0104'])
     }
 
-    if (req.from === 'mobile') {
-      const isVerified = await isClientVerified(user._id)
-      if (!isVerified) {
-        res.status(401).json(statuses['0055'])
-        return
-      }
-      const isActive = await isClientActive(user._id)
-      if (!isActive) {
-        res.status(401).json(statuses['0058'])
-        return
-      }
-    }
+    // if (req.from === 'mobile') {
+    //   const isVerified = await isClientVerified(user._id)
+    //   if (!isVerified) {
+    //     res.status(401).json(statuses['0055'])
+    //     return
+    //   }
+    //   const isActive = await isClientActive(user._id)
+    //   if (!isActive) {
+    //     res.status(401).json(statuses['0058'])
+    //     return
+    //   }
+    // }
 
     emitter.emit(EventName.LOGIN, {
       user: user._id,
@@ -87,7 +87,7 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
     // Return the access token in the response
     return res.status(200).json({
       ...statuses['00'],
-      data: encrypt(generateJwt(user._id, secrets?.JWT_SECRET_KEY), secrets?.CRYPTO_SECRET)
+      data: encrypt(generateJwt(user._id, envVars?.JWT_SECRET), envVars.HASH_KEY)
     })
   } catch (error) {
     console.log('@login error', error)
@@ -109,11 +109,11 @@ export const encryptLogin = async (req: Request & { from: string }, res: Respons
     const { username, password } = req.body
 
     // Get secrets
-    const secrets = await getAwsSecrets()
-    if (isEmpty(secrets)) {
-      res.status(401).json(statuses['0300'])
-      return
-    }
+    // const secrets = await getAwsSecrets()
+    // if (isEmpty(secrets)) {
+    //   res.status(401).json(statuses['0300'])
+    //   return
+    // }
 
     // Check if the user exists based on the username
     const user: IUser | null = await User.findOne({ username }).exec()
@@ -167,7 +167,7 @@ export const encryptLogin = async (req: Request & { from: string }, res: Respons
         token: encrypt({ 
           username: user.username, 
           password: user.password 
-        }, secrets?.PASSWORD_SECRET)
+        }, envVars.HASH_KEY)
       }
     })
   } catch (error) {
@@ -225,11 +225,11 @@ export const register = async (req: Request & { from: string }, res: Response): 
     const { username, email, password } = req.body
 
     // Get secrets
-    const secrets = await getAwsSecrets()
-    if (isEmpty(secrets)) {
-      res.status(401).json(statuses['0300'])
-      return
-    }
+    // const secrets = await getAwsSecrets()
+    // if (isEmpty(secrets)) {
+    //   res.status(401).json(statuses['0300'])
+    //   return
+    // }
 
     // Check if the username or email already exists
     const existingUser = await User.findOne().or([{ username }, { email }]).exec()
@@ -282,7 +282,7 @@ export const register = async (req: Request & { from: string }, res: Response): 
 
     return res.status(200).json({
       ...statuses['0050'],
-      data: encrypt(generateJwt(createdUser._id, secrets?.JWT_SECRET_KEY), secrets?.CRYPTO_SECRET)
+      data: encrypt(generateJwt(createdUser._id, envVars.JWT_SECRET), envVars.HASH_KEY)
     })
   } catch (error) {
     console.log('@register error', error)

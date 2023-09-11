@@ -21,7 +21,7 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
       return
     }
 
-    const { firstName, lastName, birthdate, address, contactNumber, gender, refferedBy } = req.body
+    const { firstName, lastName, birthdate, address, contactNumber, gender, email } = req.body as IProfile
     // Check if the user exists
     const user = await User.findById(req.user.value)
     if (!user) {
@@ -44,7 +44,7 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
       address,
       contactNumber,
       gender,
-      refferedBy
+      email
     })
 
     // Save the new Profile document to the database
@@ -55,10 +55,10 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
       description: ActivityType.PROFILE_CREATION
     } as IActivity)
 
-    res.status(201).json(statuses['0100'])
+    return res.status(201).json(statuses['0100'])
   } catch (error) {
     console.log('@create error', error)
-    res.status(500).json({ ...statuses['0900'], error })
+    return res.status(500).json({ ...statuses['0900'], error })
   }
 }
 

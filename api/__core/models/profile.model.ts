@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IProfile } from '../interfaces/schema.interface';
 
 // Define the ProfileSchema
@@ -18,24 +18,24 @@ const profileSchema = new Schema<IProfile>({
     },
     birthdate: { 
         type: Date, 
-        required: false 
+        required: true 
     },
     address: { 
         type: String, 
-        required: false 
+        required: true 
     },
     contactNumber: { 
         type: String, 
-        required: false 
+        required: true 
+    },
+    email: { 
+        type: String, 
+        required: true 
     },
     gender: { 
         type: String, 
         enum: ['male', 'female', 'other'], 
-        required: false 
-    },
-    refferedBy: {
-        type: String, 
-        required: false 
+        required: true 
     },
     verified: { 
         type: Boolean, 

@@ -70,3 +70,19 @@ emitter.on(EventName.PROFILE_VERIFICATION, async (payload: IActivity) => {
         console.error(`@${EventName.PROFILE_VERIFICATION} error`, error);
     }
 });
+
+emitter.on(EventName.ACTIVITY, async (payload: IActivity) => {
+    try {
+        // Create a new Activity document
+        const newActivity: IActivity = new Activity({
+            user: payload.user,
+            description: payload.description,
+        });
+
+        // Save the new activity log to the database
+        await newActivity.save();
+        console.log({ activity: payload })
+    } catch (error) {
+        console.error(`@${EventName.ACTIVITY} error`, error);
+    }
+});

@@ -5,13 +5,26 @@ export enum EventName  {
     ROLE_CREATION = 'role-creation-activity',
     PROFILE_CREATION = 'profile-creation-activity',
     PROFILE_VERIFICATION = 'profile-verification-activity',
+
+    ACTIVITY = 'user-activity'
 }
 
 export enum ActivityType {
+    ROOM_CREATED = 'Room created.',
+    ROOM_BOOKING_CREATED = 'Booking created.',
+    ROOM_COMPLETE_BOOKING_STATUS = 'Booking completed.',
+    ROOM_APPROVE_BOOKING_STATUS = 'Booking approved.',
+    ROOM_CANCEL_BOOKING_STATUS = 'Booking cancelled.',
+    FOOD_CREATED = 'Food created.',
+    FOOD_DELETED = 'Food deleted.',
+    FOOD_ORDER_REATED = 'Order created.',
+    FOOD_COMPLETE_ORDER_STATUS = 'Order delivered.',
+    FOOD_CANCEL_ORDER_STATUS = 'Order cancelled.',
+
     ROLE_CREATION = 'Role created.',
     PROFILE_CREATION = 'Profile created.',
     PROFILE_VERIFICATION = 'Account approved.',
-    LOGIN = 'Login successfully..',
+    LOGIN = 'Login successfully.',
     LOGIN_SAVED = 'Saved login.',
     LOGIN_FAILURE = 'Login failed.',
     LOGOUT = 'Logout successfully',
