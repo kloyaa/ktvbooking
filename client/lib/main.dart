@@ -1,5 +1,7 @@
+import 'package:app/const/route.const.dart';
 import 'package:app/screens/login.screen.dart';
 import 'package:app/screens/registration.screen.dart';
+import 'package:app/screens/rooms.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,8 +23,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "/auth/v1/login",
       getPages: [
-        GetPage(name: "/auth/v1/login", page: () => const Login()),
-        GetPage(name: "/auth/v1/register", page: () => const Registration())
+        GetPage(name: MobileRoute.login, page: () => const Login()),
+        GetPage(name: MobileRoute.register, page: () => const Registration()),
+        GetPage(name: MobileRoute.rooms, page: () => const Rooms()),
       ],
     );
   }

@@ -24,7 +24,7 @@ export const statuses = {
         code: "0050",
     },
     "0051": {
-        message: "Incorrect username or password.",
+        message: "Incorrect username and/or password.",
         code: "0051",
     },
     "0052": {

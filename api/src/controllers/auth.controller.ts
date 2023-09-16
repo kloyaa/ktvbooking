@@ -9,15 +9,17 @@ import { generateJwt } from '../../__core/utils/jwt.util'
 import { decrypt, encrypt } from '../../__core/utils/crypto.util'
 import { getAwsSecrets } from '../../__core/services/aws.service'
 import { isEmpty } from '../../__core/utils/methods.util'
-import { isClientActive, isClientProfileCreated, isClientVerified } from '../../__core/repositories/user.repositories'
+import { isClientProfileCreated, isClientVerified } from '../../__core/repositories/user.repositories'
 import { emitter } from '../../__core/events/activity.event'
 import { ActivityType, EventName } from '../../__core/enum/activity.enum'
 import { UserRole } from '../../__core/models/roles.model'
 import { envVars } from '../../__core/const/config.const'
+import { delay } from '../utils/delay.util'
 
 export const login = async (req: Request & { from: string }, res: Response): Promise<Response<any>> => {
   try {
-    // Check if there are any validation errors
+    await delay(1000);
+
     const error = new RequestValidator().loginAPI(req.body)
     if (error) {
       res.status(400).json({
@@ -28,13 +30,6 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
     }
     const { username, password } = req.body
 
-    // Get secrets
-    // const secrets = await getAwsSecrets()
-    // if (isEmpty(secrets)) {
-    //   res.status(401).json(statuses['0300'])
-    //   return
-    // }
-
     // Check if the user exists based on the username
     const user: IUser | null = await User.findOne({ username }).exec()
     if (!user) {
@@ -43,40 +38,12 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
       return
     }
 
-    // Find the user's role based on the user ID
-    const userRole = await UserRole.findOne({ user: user._id }).exec()
-
-    // Check if the user has the admin role
-    if ((userRole.name === 'client') && req.from !== 'mobile') {
-      return res.status(401).json(statuses['0057'])
-    } else if ((userRole.name === 'admin') && req.from !== 'web') {
-      return res.status(401).json(statuses['0057'])
-    }
-
     // Compare the provided password with the stored hashed password
     const isPasswordValid: boolean = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
       // Incorrect password
       return res.status(401).json(statuses['0051'])
     }
-
-    const isClientProfile = await isClientProfileCreated(user._id)
-    if (!isClientProfile) {
-      return res.status(401).json(statuses['0104'])
-    }
-
-    // if (req.from === 'mobile') {
-    //   const isVerified = await isClientVerified(user._id)
-    //   if (!isVerified) {
-    //     res.status(401).json(statuses['0055'])
-    //     return
-    //   }
-    //   const isActive = await isClientActive(user._id)
-    //   if (!isActive) {
-    //     res.status(401).json(statuses['0058'])
-    //     return
-    //   }
-    // }
 
     emitter.emit(EventName.LOGIN, {
       user: user._id,
@@ -88,7 +55,8 @@ export const login = async (req: Request & { from: string }, res: Response): Pro
     return res.status(200).json({
       ...statuses['00'],
       data: encrypt(generateJwt(user._id, envVars?.JWT_SECRET), envVars.HASH_KEY)
-    })
+    });
+    
   } catch (error) {
     console.log('@login error', error)
     res.status(401).json(statuses['0900'])
@@ -217,19 +185,12 @@ export const register = async (req: Request & { from: string }, res: Response): 
     if (error) {
       res.status(400).json({
         ...statuses['501'],
-        error: error.details[0].message.replace(/['"]/g, '')
+        message: error.details[0].message.replace(/['"]/g, '')
       })
       return
     }
 
     const { username, email, password } = req.body
-
-    // Get secrets
-    // const secrets = await getAwsSecrets()
-    // if (isEmpty(secrets)) {
-    //   res.status(401).json(statuses['0300'])
-    //   return
-    // }
 
     // Check if the username or email already exists
     const existingUser = await User.findOne().or([{ username }, { email }]).exec()
@@ -253,33 +214,14 @@ export const register = async (req: Request & { from: string }, res: Response): 
       salt
     })
 
-    // Save the new User document to the database
     const createdUser = await newUser.save()
-    let userRole = null
-
-    if (req.from === 'mobile') {
-      userRole = new UserRole({
-        user: createdUser._id,
-        name: 'client',
-        description: 'N/A'
-      })
-    }
-
-    if (req.from === 'web') {
-      userRole = new UserRole({
-        user: createdUser._id,
-        name: 'admin',
-        description: 'N/A'
-      })
-    }
-
-    await userRole.save()
 
     emitter.emit(EventName.ACCOUNT_CREATION, {
       user: createdUser._id,
       description: ActivityType.ACCOUNT_CREATION
     } as IActivity)
 
+    console.log(createdUser._id, envVars.JWT_SECRET)
     return res.status(200).json({
       ...statuses['0050'],
       data: encrypt(generateJwt(createdUser._id, envVars.JWT_SECRET), envVars.HASH_KEY)

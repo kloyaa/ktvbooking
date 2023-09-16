@@ -25,8 +25,8 @@ export class RequestValidator {
     registerAPI(body: any) {
         const { error } = Joi.object({
             username: Joi.string().required(),
-            email: Joi.string().email().required(),
-            password: Joi.string().min(6).required(),
+            email: Joi.string().email().message("Incorrect Email Address format.").required(),
+            password: Joi.required(),
         }).validate(body);
 
         return error;
