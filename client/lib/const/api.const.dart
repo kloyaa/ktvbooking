@@ -1,5 +1,6 @@
-const String localIPA = "192.168.1.102"; //IPv4 Address
-const String baseUrl = "http://$localIPA:3000/api";
+import 'package:app/config.dart';
+
+const String baseUrl = "http://$localNetworkIPA:3000/api";
 
 class Api {
   // Authentication
@@ -14,7 +15,15 @@ class Api {
 
   // Rooms
   static const String getRooms = "$baseUrl/room/v1";
+  static const String getFoods = "$baseUrl/food/v1";
+  static const String getMyBookings = "$baseUrl/booking/v1/me";
+  static const String getBookings = "$baseUrl/booking/v1";
+  static const String createFood = "$baseUrl/food/v1";
+  static const String deleteFood = "$baseUrl/food/v1";
   static const String createBooking = "$baseUrl/booking/v1";
+  static const String createRoom = "$baseUrl/room/v1";
+  static const String createBulkOrder = "$baseUrl/order/v1/place-many";
+  static const String acceotBooking = "$baseUrl/booking/v1";
 }
 
 final headers = {

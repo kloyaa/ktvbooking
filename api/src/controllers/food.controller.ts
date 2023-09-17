@@ -38,7 +38,7 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
 }
 
 export const getAll  = async (req: Request & { user?: any }, res: Response): Promise<Response<any>> => {
-    const result = await Food.find();
+    const result = await Food.find().sort({ createdAt: -1});
     return res.status(200).json(result);
 }
 
@@ -61,7 +61,7 @@ export const remove = async (req: Request & { user?: any }, res: Response): Prom
             description: ActivityType.FOOD_DELETED
         } as IActivity);
 
-        return res.status(400).json(statuses['00'])
+        return res.status(200).json(statuses['00'])
     } catch (error) {
         console.log('@remove error', error)
         return res.status(500).json({ ...statuses['0900'], error })

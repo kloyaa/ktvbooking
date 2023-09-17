@@ -57,13 +57,77 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
 
         emitter.emit(EventName.ACTIVITY, {
             user: req.user.value,
-            description: ActivityType.FOOD_ORDER_REATED
+            description: ActivityType.FOOD_ORDER_CREATED
         } as IActivity)
 
         return res.status(201).json(statuses['00'])
     } catch (error) {
         console.log('@create error', error)
         return res.status(500).json({ ...statuses['0900'], error })
+    }
+}
+
+export const createMany = async (req: Request & { user?: any }, res: Response): Promise<Response<any>> => {
+    try {
+        const ordersData = req.body; // Assuming req.body is an array of orders
+
+        // Validate each order in the array
+        for (const orderData of ordersData) {
+            const error = new RequestValidator().createOrderAPI(orderData);
+            if (error) {
+                return res.status(400).json({
+                    ...statuses['501'],
+                    error: error.details[0].message.replace(/['"]/g, '')
+                });
+            }
+
+            if (!isValidObjectId(orderData.food) || !isValidObjectId(orderData.room)) {
+                return res.status(400).json({
+                    ...statuses['500'],
+                    message: "Invalid format."
+                });
+            }
+
+            const [food, room] = await Promise.all([
+                Food.findById(orderData.food).exec(),
+                Room.findById(orderData.room).exec()
+            ]);
+
+            if (!food) {
+                return res.status(400).json({
+                    ...statuses['02'],
+                    message: "Food not found."
+                });
+            }
+
+            if (!room) {
+                return res.status(400).json({
+                    ...statuses['02'],
+                    message: "Room not found."
+                });
+            }
+        }
+
+        // Create an array of order documents
+        const ordersToInsert = ordersData.map((orderData: any) => ({
+            food: orderData.food,
+            room: orderData.room,
+            qty: orderData.qty,
+            message: orderData.message
+        }));
+
+        // Insert all orders at once using insertMany
+        const savedOrders = await Order.insertMany(ordersToInsert);
+
+        emitter.emit(EventName.ACTIVITY, {
+            user: req.user.value,
+            description: ActivityType.FOOD_ORDER_CREATED
+        } as IActivity);
+
+        return res.status(201).json(savedOrders);
+    } catch (error) {
+        console.log('@create error', error);
+        return res.status(500).json({ ...statuses['0900'], error });
     }
 }
 

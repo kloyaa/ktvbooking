@@ -48,6 +48,10 @@ export const create = async (req: Request & { user?: any }, res: Response): Prom
         return res.status(500).json({ ...statuses['0900'], error })
     }
 }
+export const getMyBookings = async (req: Request & { user?: any }, res: Response): Promise<Response<any>> => {
+    const result = await Booking.findOne({ user: req.user.value, active: true });
+    return res.status(200).json(result);
+}
 
 export const getAllBookingRequests = async (req: Request & { user?: any }, res: Response): Promise<Response<any>> =>  {
     try {
@@ -136,7 +140,7 @@ export const updateBookingStatus = async (req: Request & { user?: any }, res: Re
 
        
 
-        return res.status(201).json(statuses['00'])
+        return res.status(200).json(statuses['00'])
     } catch (error) {
         console.log('@updateBookingStatus error', error)
         return res.status(500).json({ ...statuses['0900'], error })

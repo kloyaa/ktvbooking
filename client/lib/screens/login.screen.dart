@@ -1,7 +1,9 @@
+import 'package:app/config.dart';
 import 'package:app/const/colors.const.dart';
 import 'package:app/const/route.const.dart';
 import 'package:app/controllers/auth.controller.dart';
 import 'package:app/controllers/classes/response.class.dart';
+import 'package:app/enum/config.enum.dart';
 import 'package:app/widgets/animated_opacity_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,13 +30,17 @@ class _LoginState extends State<Login> {
   Future<void> handleLogin(username, password) async {
     final response = await _authController.login(username, password);
     if (response == "00") {
-      Get.toNamed(MobileRoute.rooms);
+      if (mobileAppBuild == BuildType.customer) {
+        return Get.toNamed(MobileRoute.rooms);
+      }
+      if (mobileAppBuild == BuildType.ktv) {
+        return Get.toNamed(MobileRoute.customerBookings);
+      }
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     _usernameFocus = FocusNode();
     _passwordFocus = FocusNode();
 
@@ -45,8 +51,6 @@ class _LoginState extends State<Login> {
         data: '',
       );
     });
-    // _usernameController.text = "nizk0001";
-    // _passwordController.text = "password@123";
 
     super.initState();
   }

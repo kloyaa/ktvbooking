@@ -35,13 +35,12 @@ class _RegistrationState extends State<Registration> {
   bool _isPasswordVisible = false;
 
   Future<void> handleRegister(email, username, password) async {
-    print({username, password, email});
     await _authController.register(username, password, email);
+    return Get.toNamed(MobileRoute.login);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     _emailFocus = FocusNode();
     _usernameFocus = FocusNode();
     _passwordFocus = FocusNode();
@@ -54,9 +53,6 @@ class _RegistrationState extends State<Registration> {
         data: '',
       );
     });
-    // _usernameController.text = "nizk0001";
-    // _passwordController.text = "password@123";
-
     super.initState();
   }
 

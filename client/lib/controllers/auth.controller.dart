@@ -59,11 +59,7 @@ class Controller extends GetxController {
   ) async {
     try {
       isLoading.value = true;
-      print({
-        'email': email,
-        'username': username,
-        'password': password,
-      });
+
       final response = await _dio.post(
         Api.register,
         data: {

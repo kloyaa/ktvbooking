@@ -17,7 +17,7 @@ export enum ActivityType {
     ROOM_CANCEL_BOOKING_STATUS = 'Booking cancelled.',
     FOOD_CREATED = 'Food created.',
     FOOD_DELETED = 'Food deleted.',
-    FOOD_ORDER_REATED = 'Order created.',
+    FOOD_ORDER_CREATED = 'Order created.',
     FOOD_COMPLETE_ORDER_STATUS = 'Order delivered.',
     FOOD_CANCEL_ORDER_STATUS = 'Order cancelled.',
 
